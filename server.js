@@ -199,13 +199,38 @@ function semanticSearch(query) {
         if (p.inStock) {
             score += 0.5;
         }
-        score += p.popularity*0.2;
-        return {p, score};
+        score += p.popularity * 0.2;
+        return { p, score };
     })
-    .filter(r=>r.score >0.5)
-    .sort((a,b)=> b.score - a.score)
-    .slice(0, 8).map(r=> r.p)
+        .filter(r => r.score > 0.5)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 8).map(r => r.p)
 }
+
+app.get("/api/products", (req, res) => {
+    const { category, minPrice, maxPrice, minRating, inStock, sort } = req.query;
+    let list = [...products];
+    if (category && category !== "all") {
+        list = list.filter(p => p.category.toLocaleLowerCase() === category.toLowerCase());
+    }
+    if (minPrice) {
+        list = list.filter(p => p.price >= +minPrice);
+    }
+    if (maxPrice) {
+        list = list.filter(p => p.price <= +maxPrice);
+    }
+    if (minRating) {
+        list = list.filter(p => p.rating >= +minRating)
+    }
+    if (inStock === "true") {
+        list = list.filter(p => p.inStock);
+    }
+    if (sort === "price_asc") list.sort((a, b) => a.price - b.price);
+    else if (sort === "price_desc") list.sort((a, b) => b.price - a.price);
+    else if (sort === "rating") list.sort((a, b) => b.rating - a.rating);
+    else list.sort((a, b) => b.popularity - a.popularity);
+    res.json({ products: list, total: list.length });
+})
 
 
 app.listen(PORT, () => console.log(`🛒 MaNar Store is running in → http://localhost:${PORT}`));
