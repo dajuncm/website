@@ -245,7 +245,26 @@ app.get("/api/products/:id", (req, res) => {
 })
 
 
+app.get("/api/categories", (req, res) => {
+  res.json({ categories: [...new Set(products.map(p => p.category))].sort() });
+});
 
+app.post("/api/search/ai", (req, res) => {
+  const { query } = req.body;
+  if (!query?.trim()) return res.status(400).json({ error: "Query required" });
+  const results = semanticSearch(query.trim());
+  const q = query.toLowerCase();
+  let intent = "your search";
+  if (q.includes("run")||q.includes("workout")||q.includes("gym")) intent = "fitness & sport";
+  else if (q.includes("student")||q.includes("university")||q.includes("study")) intent = "studying";
+  else if (q.includes("travel")||q.includes("portable")) intent = "travel";
+  else if (q.includes("music")||q.includes("audio")||q.includes("listen")) intent = "music & audio";
+  else if (q.includes("budget")||q.includes("cheap")||q.includes("affordable")) intent = "budget-friendly options";
+  else if (q.includes("gaming")||q.includes("game")||q.includes("gamer")) intent = "gaming";
+  else if (q.includes("office")||q.includes("work")||q.includes("desk")) intent = "home office & productivity";
+  res.json({ results, intentSummary: `Found ${results.length} product${results.length!==1?"s":""} for ${intent}`, query });
+});
 
+app.get("*", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
 
 app.listen(PORT, () => console.log(`🛒 MaNar Store is running in → http://localhost:${PORT}`));
