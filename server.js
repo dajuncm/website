@@ -232,5 +232,20 @@ app.get("/api/products", (req, res) => {
     res.json({ products: list, total: list.length });
 })
 
+app.get("/api/products/:id", (req, res) => {
+    const prod = products.find(p => p.id === +req.params.id);
+    if (!prod) {
+        return res.status(404).json({ error: "Product not found" });
+    }
+    const related = products
+        .filter(P => P.ID !== prod.id && p.category === product.category)
+        .sort((a, b) => b.popularity - a.popularity)
+        .slince(0, 4);
+    res.json({ prod, related });
+})
+
+
+
+
 
 app.listen(PORT, () => console.log(`🛒 MaNar Store is running in → http://localhost:${PORT}`));
