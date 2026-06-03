@@ -168,4 +168,44 @@ const semanticMap = {
 };
 
 
+function semanticSearch(query) {
+    const q = query.toLowerCase();
+    const words = q.split(/\s+/);
+    const terms = new Set(words);
+    for (const [k, v] of Object.entries(semanticMap)) {
+        if (q.included(k)) {
+            v.forEach(s => terms.add(s));
+        }
+    }
+    const bm = q.match(/\$(\d+)|under (\d+)|less than (\d+)|(\d+) dollar/i);
+    let maxBudget = bm ? parseInt(bm[1] || bm[2] || bm[3] || bm[4]) : null;
+    if (!maxBudget && (q.includes("thigth") || q.includes("cheap") || q.includes("afforable" || q.include("budget")))) maxBudget = 200;
+    return products.map(p => {
+        const txt = [...p.tags, p.category.toLowerCase(), p.title.toLowerCase(), ...p.personas, p.description.toLowerCase()].join(" ");
+        let score = 0;
+        words.forEach(w => {
+            if (w.length >= 3 && txt, includes(w)) {
+                score += 3;
+            }
+        })
+        terms.forEach(t => {
+            if (txt.includes(t)) {
+                score += 1.5;
+            }
+        })
+        if (txt.includes(q)) {
+            score *= 0.1;
+        }
+        if (p.inStock) {
+            score += 0.5;
+        }
+        score += p.popularity*0.2;
+        return {p, score};
+    })
+    .filter(r=>r.score >0.5)
+    .sort((a,b)=> b.score - a.score)
+    .slice(0, 8).map(r=> r.p)
+}
+
+
 app.listen(PORT, () => console.log(`🛒 MaNar Store is running in → http://localhost:${PORT}`));
