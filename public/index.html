@@ -4,269 +4,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MaNar online shopping</title>
+    <title>MaNar Online Shopping</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
-        rel="stylesheet" />
+        rel="stylesheet">
+
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+
     <header class="header">
         <div class="header-inner">
+
             <a href="#" class="logo" id="logoLink">
                 <span class="logo-mark">MN</span>
-                <span class="logo-text">online shopping</span>
+                <span class="logo-text">Online Shopping</span>
             </a>
+
             <nav class="header-nav">
-                <button class="nav-btn active" data-view="ai">Shop</button>
+                <button class="nav-btn active" data-view="shop">Shop</button>
                 <button class="nav-btn" data-view="ai">✦ AI Shopper</button>
             </nav>
+
             <div class="header-actions">
-                <button class="icon-btn" id="themeToggle" title="Toggle theme">◐</button>
+
+                <button class="icon-btn" id="themeToggle" title="Toggle Theme">
+                    ◐
+                </button>
+
                 <div class="auth-btns" id="authBtns">
-                    <button class="btn-ghost" id="openLogin">Singn In</button>
-                    <button class="btn-accent" id="openRegister">Sign Up</button>
+                    <button class="btn-ghost" id="openLogin">
+                        Sign In
+                    </button>
+
+                    <button class="btn-accent" id="openRegister">
+                        Sign Up
+                    </button>
                 </div>
-                <div class="user-chip" id="userChip" style="display: none;">
+
+                <div class="user-chip" id="userChip" style="display:none;">
                     <span class="user-chip-avatar" id="chipAvatar">?</span>
                     <span class="user-chip-name" id="chipName">—</span>
+
                     <button class="icon-btn" id="logoutBtn" title="Sign Out">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.2">
-                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
-                            <polyline points=" 16 17 21 12 16 7" />
-                            <line x1="21" y1="12" x2="9" y2="12" />
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
                         </svg>
                     </button>
                 </div>
+
                 <button class="cart-btn" id="cartBtn">
-                    <svg width="21" heigth="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <path d="M16 10a4 4 0 01-8 0" />
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
                     </svg>
+
                     <span class="cart-badge" id="cartCount"></span>
                 </button>
+
+            </div>
+        </div>
     </header>
+
     <main class="main">
-        <selection class="view" id="shopView">
+
+        <section class="view" id="shopView">
+
             <div class="shop-topbar">
+
                 <div class="search-wrap">
-                    <svg class="search-ico" width="17" height="17" viewBox="0 0 24 24" filll="none"
-                        stroke="currentColor" stroke-width="2">
+
+                    <svg class="search-ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
                     </svg>
-                    <input type="text" id="shopSerach" class="search-input" placeholder="Search profucts...">
+
+                    <input type="text" id="shopSearch" class="search-input" placeholder="Search products...">
+
                 </div>
-                <button class="btn-accent" id="tryAiBtn">✦ AI Search</button>
+
+                <button class="btn-accent" id="tryAiBtn">
+                    ✦ AI Search
+                </button>
+
             </div>
             <div class="search-layout">
-                <aside class="slidebar">
-                    <div class="slidebar-head">
-                        <h2 class="slidebar-title">Filters</h2>
-                        <button class="link-btn" id="clearFilters">Clear All</button>
 
+                <aside class="sidebar">
+
+                    <div class="sidebar-head">
+                        <h2 class="sidebar-title">Filters</h2>
+                        <button class="link-btn" id="clearFilters">
+                            Clear All
+                        </button>
                     </div>
+
                     <div class="fgroup">
                         <p class="flabel">Category</p>
-                        <div classs="cat-list" id="categoryList">
-                            <button class="cat-btn active" data-cat="all">ALL</button>
+
+                        <div class="cat-list" id="categoryList">
+                            <button class="cat-btn active" data-cat="all">
+                                All
+                            </button>
                         </div>
                     </div>
+
                     <div class="fgroup">
                         <p class="flabel">Price Range</p>
-                        <div class="price-display"><span id="priceMin">$0</span> — <span id="priceMax">$1100</span>
+
+                        <div class="price-display">
+                            <span id="priceMin">$0</span>
+                            —
+                            <span id="priceMax">$1100</span>
                         </div>
+
                         <div class="range-wrap">
-                            <input type="range" id="rangeMin" class="rslider" min="0" max="1100" value="0" step="10" />
-                            <input type="range" id="rangeMax" class="rslider" min="0" max="1100" value="1100"
-                                step="10" />
+
+                            <input type="range" id="rangeMin" class="rslider" min="0" max="1100" value="0" step="10">
+
+                            <input type="range" id="rangeMax" class="rslider" min="0" max="1100" value="1100" step="10">
+
                             <div class="range-fill" id="rangeFill"></div>
+
                         </div>
                     </div>
+
                     <div class="fgroup">
-                        <p class="flabel">Min Rating</p>
+                        <p class="flabel">Minimum Rating</p>
+
                         <div class="star-list">
-                            <button class="star-btn active" data-r="0">All ratings</button>
-                            <button class="star-btn" data-r="3">⭐⭐⭐ & up</button>
-                            <button class="star-btn" data-r="4">⭐⭐⭐⭐ & up</button>
-                            <button class="star-btn" data-r="4.5">⭐⭐⭐⭐½ & up</button>
+
+                            <button class="star-btn active" data-r="0">
+                                All Ratings
+                            </button>
+
+                            <button class="star-btn" data-r="3">
+                                ⭐⭐⭐ & Up
+                            </button>
+
+                            <button class="star-btn" data-r="4">
+                                ⭐⭐⭐⭐ & Up
+                            </button>
+
+                            <button class="star-btn" data-r="4.5">
+                                ⭐⭐⭐⭐½ & Up
+                            </button>
+
                         </div>
                     </div>
+
                     <div class="fgroup">
+
                         <p class="flabel">Availability</p>
+
                         <label class="toggle-row">
-                            <input type="checkbox" id="inStockOnly" class="tgl-input" />
-                            <span class="tgl-track"><span class="tgl-thumb"></span></span>
-                            <span class="tgl-text">In stock only</span>
+
+                            <input type="checkbox" id="inStockOnly" class="tgl-input">
+
+                            <span class="tgl-track">
+                                <span class="tgl-thumb"></span>
+                            </span>
+
+                            <span class="tgl-text">
+                                In Stock Only
+                            </span>
+
                         </label>
+
                     </div>
+
                 </aside>
+
                 <div class="products-col">
+
                     <div class="grid-toolbar">
-                        <p class="grid-count" id="productCount">Loading...</p>
+
+                        <p class="grid-count" id="productCount">
+                            Loading...
+                        </p>
+
                         <div class="sort-row">
-                            <span class="sort-lbl">Sort</span>
+
+                            <span class="sort-lbl">
+                                Sort
+                            </span>
+
                             <select id="sortSelect" class="sort-sel">
-                                <option vlaue="popularity">Popularity
+
+                                <option value="popularity">
+                                    Popularity
                                 </option>
-                                <option vlaue="price-asc">Price ↑</option>
-                                <option value="price-desc">Price ↓</option>
-                                <option value="rating">Top Rated</option>
+
+                                <option value="price-asc">
+                                    Price ↑
+                                </option>
+
+                                <option value="price-desc">
+                                    Price ↓
+                                </option>
+
+                                <option value="rating">
+                                    Top Rated
+                                </option>
+
                             </select>
+
                         </div>
+
                     </div>
-                    <div class="product*grid" id="productGrid"></div>
-                    <div class="ampty-state" id="emptyState" style="display:nono">
+
+                    <div class="product-grid" id="productGrid"></div>
+
+                    <div class="empty-state" id="emptyState" style="display:none">
+
                         <div class="empty-ico">⌀</div>
+
                         <p>No Products Found.</p>
-                        <button class="btn-ghost" onclick="clearFilters()">Clear Filters</button>
+
+                        <button class="btn-ghost" onclick="clearFilters()">
+                            Clear Filters
+                        </button>
+
                     </div>
+
                 </div>
+
             </div>
-        </selection>
 
+        </section>
 
-        <selection class="view" id="detailView" style="display:none">
-            <div class="detail-container" id="deitalContainer"></div>
-        </selection>
+        <section class="view" id="detailView" style="display:none">
 
+            <div class="detail-container" id="detailContainer"></div>
 
-        <selection class="view" id="AiView" style="dispaly:none">
-            <div class=ai-hero>
-                <div class="ai-pill">✦ Semantic AI</div>
-                <h1 class="ai-title">Your Personal <em>AI Shoper</em></h1>
-                <p class="ai-sub">Describe what you need in plain language — I'll find the perfect products.</p>
+        </section>
+
+        <section class="view" id="aiView" style="display:none">
+
+            <div class="ai-hero">
+
+                <div class="ai-pill">
+                    ✦ Semantic AI
+                </div>
+
+                <h1 class="ai-title">
+                    Your Personal
+                    <em>AI Shopper</em>
+                </h1>
+
+                <p class="ai-sub">
+                    Describe what you need in plain language —
+                    I'll find the perfect products.
+                </p>
+
             </div>
             <div class="chat-shell">
+
                 <div class="msg bot">
+
                     <div class="bot-ava">✦</div>
+
                     <div class="bot-bubble">
-                        <p>Hi! I'm your AI Personal Shopper. Tell me what you're looking for and I'll find the best
-                            matches for you.</p>
+
+                        <p>
+                            Hi! I'm your AI Personal Shopper.
+                            Tell me what you're looking for
+                            and I'll find the best matches
+                            for you.
+                        </p>
+
                         <div class="chips">
-                            <button class="chip" daat-q="I need something to listen to music while running">🎧 Music for
-                                running</button>
-                            <button class="chip" data-q="My budget is tight and I need a laptop for university">📚
-                                Budget
-                                student laptop</button>
-                            <button class="chip" data-q="I want to capture travel adventures in 4K">📸 Travel
-                                camera</button>
-                            <button class="chip" data-q="I need to set up a better work from home office">💻 Home office
-                                setup</button>
-                            <button class="chip" data-q="Looking for a gift for a fitness enthusiast under $100">🎁
-                                Fitness gift under $100</button>
-                            <button class="chip" data-q="I want to start streaming and making YouTube videos">🎬
-                                Streaming setup</button>
+
+                            <button class="chip" data-q="I need something to listen to music while running">
+                                🎧 Music For Running
+                            </button>
+
+                            <button class="chip" data-q="My budget is tight and I need a laptop for university">
+                                📚 Budget Student Laptop
+                            </button>
+
+                            <button class="chip" data-q="I want to capture travel adventures in 4K">
+                                📸 Travel Camera
+                            </button>
+
+                            <button class="chip" data-q="I need to set up a better work from home office">
+                                💻 Home Office Setup
+                            </button>
+
+                            <button class="chip" data-q="Looking for a gift for a fitness enthusiast under $100">
+                                🎁 Fitness Gift Under $100
+                            </button>
+
+                            <button class="chip" data-q="I want to start streaming and making YouTube videos">
+                                🎬 Streaming Setup
+                            </button>
+
                         </div>
+
                     </div>
+
                 </div>
+
+                <div id="aiMessages"></div>
+
             </div>
+
             <div class="chat-input-row">
+
                 <div class="chat-input-wrap">
-                    <textarea id="aiInput" class="chat-textarea" placeholder="e.g. 'wireless earbuds for morning jogs'…"
+
+                    <textarea id="aiInput" class="chat-textarea" placeholder="e.g. wireless earbuds for morning jogs..."
                         rows="1"></textarea>
+
                     <button class="chat-send" id="aiSendBtn">
-                        <svg weigth="19" heigth="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.5">
-                            <line x1="22" y1=" 2" x2="11" y2="13" />
-                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                         </svg>
+
                     </button>
+
                 </div>
+
             </div>
-            </div>
-        </selection>
+
+        </section>
+
     </main>
 
-
     <div class="overlay" id="cartOverlay"></div>
+
     <aside class="drawer" id="cartDrawer">
+
         <div class="drawer-head">
-            <h2 class="drawer-titel">Your Cart</h2>
-            <button class="icon-btn" id="cartClode">✕</button>
-        </div>
-        <div class="drawer-body" id="cartItems">
-            <div class="cart-empty" id="cartEmpty">
-                <div style="font-size:48px; margin-bottom:12px">🛍️</div>
-                <p>Your cart is empty</p>
-                <span>Add products to get started</span>
-            </div>
-        </div>
-        <div class="drawer-foot" id="cartFooter" style="display:none">
-            <div class="summary">
-                <div class="sum-row"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
-                <div class="sum-row"> <span>Shiping</span><span class="free-tag"></span>Free</div>
-                <div class="sum-row"><span>Total</span><span id="cartTotal">$0.00</span> </div>
-            </div>
-            <button class="btn-chekout" id="chekoutBtn">
-                Chekout
-                <svg width="17" heigth="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polyline points="9 18 15 12 9 6" />
-                </svg>
+
+            <h2 class="drawer-title">
+                Your Cart
+            </h2>
+
+            <button class="icon-btn" id="cartClose">
+                ✕
             </button>
+
         </div>
+
+        <div class="drawer-body" id="cartItems">
+
+            <div class="cart-empty" id="cartEmpty">
+
+                <div style="
+                        font-size:48px;
+                        margin-bottom:12px;
+                    ">
+                    🛍️
+                </div>
+
+                <p>Your Cart Is Empty</p>
+
+                <span>
+                    Add Products To Get Started
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="drawer-foot" id="cartFooter" style="display:none">
+
+            <div class="summary">
+
+                <div class="sum-row">
+                    <span>Subtotal</span>
+                    <span id="cartSubtotal">
+                        $0.00
+                    </span>
+                </div>
+
+                <div class="sum-row">
+                    <span>Shipping</span>
+                    <span class="free-tag">
+                        Free
+                    </span>
+                </div>
+
+                <div class="sum-row">
+                    <span>Total</span>
+                    <span id="cartTotal">
+                        $0.00
+                    </span>
+                </div>
+
+            </div>
+
+            <button class="btn-checkout" id="checkoutBtn">
+                Checkout
+
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+
+            </button>
+
+        </div>
+
     </aside>
-
-
     <div class="modal-overlay" id="loginModal" style="display:none">
+
         <div class="modal-card">
-            <button class="modal-x" data-close="loginModal">✕</button>
-            <div class="modal-logo"><span class="logo-mark">MN</span><span class="logo-text">MaNar</span></div>
-            <h2 class="modal-title">Welcome back</h2>
-            <p class="modal-sub">Singn in to your account</p>
-            <div class="form-err" id="login-err"></div>
-            <div class="form-row">
-                <label class="form-lbl">Email</label>
-                <input type="email" id="loginEmial" class="form-inp" placeholder="you@example.com" />
+
+            <button class="modal-x" data-close="loginModal">
+                ✕
+            </button>
+
+            <div class="modal-logo">
+                <span class="logo-mark">MN</span>
+                <span class="logo-text">MaNar</span>
             </div>
+
+            <h2 class="modal-title">
+                Welcome Back
+            </h2>
+
+            <p class="modal-sub">
+                Sign in to your account
+            </p>
+
+            <div class="form-err" id="loginErr"></div>
+
             <div class="form-row">
-                <label class="form-lbl">Paspsword</label>
-                <input type="password" id="loginPass" class="form-inp" placeholder="••••••••" />
+                <label class="form-lbl">
+                    Email
+                </label>
+
+                <input type="email" id="loginEmail" class="form-inp" placeholder="you@example.com">
             </div>
-            <button class="btn-modal-sumbit" id="loginBtn">Sign in</button>
-            <p class="moadal-switch">Don't have an account ?<button class="link-btn" id="switchToRegister">Sign
-                    up</button></p>
+
+            <div class="form-row">
+                <label class="form-lbl">
+                    Password
+                </label>
+
+                <input type="password" id="loginPass" class="form-inp" placeholder="••••••••">
+            </div>
+
+            <button class="btn-modal-submit" id="loginBtn">
+                Sign In
+            </button>
+
+            <p class="modal-switch">
+                Don't have an account?
+
+                <button class="link-btn" id="switchToRegister">
+                    Sign Up
+                </button>
+            </p>
+
         </div>
+
     </div>
 
     <div class="modal-overlay" id="registerModal" style="display:none">
+
         <div class="modal-card">
-            <button class="modal-x" data-close="registerModal">✕</button>
-            <div class="modal-logo"><span class="logo-mark">MN</span><span class="logo-text">MaNar</span> </div>
-            <h2 class="modal-title">Create account</h2>
-            <p class="modal-sub">Join MaNar for free</p>
+
+            <button class="modal-x" data-close="registerModal">
+                ✕
+            </button>
+
+            <div class="modal-logo">
+                <span class="logo-mark">MN</span>
+                <span class="logo-text">MaNar</span>
+            </div>
+
+            <h2 class="modal-title">
+                Create Account
+            </h2>
+
+            <p class="modal-sub">
+                Join MaNar for free
+            </p>
+
             <div class="form-err" id="regErr"></div>
+
             <div class="form-row">
-                <label class="form-lbl">Full Name</label>
-                <input type="text" id="regName" class="for-inp" placeholder="John Joe" />
+
+                <label class="form-lbl">
+                    Full Name
+                </label>
+
+                <input type="text" id="regName" class="form-inp" placeholder="John Doe">
+
             </div>
+
             <div class="form-row">
-                <label class="form-lbl">Email</label>
-                <input type="email" id="regEmail" class="form-inp" placeholder="you@example.com" />
+
+                <label class="form-lbl">
+                    Email
+                </label>
+
+                <input type="email" id="regEmail" class="form-inp" placeholder="you@example.com">
+
             </div>
+
             <div class="form-row">
-                <label class="form-lbl">Password <span class="hint">min 6 characters</span></label>
-                <input type="password" id="regPass" class="form-inp" placeholder="••••••••" />
+
+                <label class="form-lbl">
+                    Password
+                    <span class="hint">
+                        min 6 characters
+                    </span>
+                </label>
+
+                <input type="password" id="regPass" class="form-inp" placeholder="••••••••">
+
             </div>
-            <button class="btn-modal-submit" id="registerBtn">Create Account</button>
-            <p class="modal-switch">Already have an account? <button class="link-btn" id="switchToLogin">Sign
-                    in</button></p>
+
+            <button class="btn-modal-submit" id="registerBtn">
+                Create Account
+            </button>
+
+            <p class="modal-switch">
+
+                Already have an account?
+
+                <button class="link-btn" id="switchToLogin">
+                    Sign In
+                </button>
+
+            </p>
+
         </div>
+
     </div>
+
     <div class="modal-overlay" id="checkoutModal" style="display:none">
+
         <div class="modal-card" style="text-align:center">
-            <div class="success-ico">✓</div>
-            <h2 class="modal-title">Order Confirmed!</h2>
-            <p class="modal-sub" style="margin-bottom:28px">Thank you for your purchase. Your items will be shipped
-                within 1–2 business days.</p>
-            <button class="btn-modal-submit" id="modalCloseBtn">Continue Shopping</button>
+
+            <div class="success-ico">
+                ✓
+            </div>
+
+            <h2 class="modal-title">
+                Order Confirmed!
+            </h2>
+
+            <p class="modal-sub" style="margin-bottom:28px">
+                Thank you for your purchase.
+                Your items will be shipped
+                within 1–2 business days.
+            </p>
+
+            <button class="btn-modal-submit" id="modalCloseBtn">
+                Continue Shopping
+            </button>
+
         </div>
+
     </div>
+
     <div class="toast" id="toast"></div>
-    </div>
-    </div>
+
+    <script src="app.js"></script>
+
 </body>
+
 </html>
