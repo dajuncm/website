@@ -112,3 +112,80 @@ async function loadCategories() {
     loadProducts();
   });
 }
+
+async function loadProducts() {
+  const f = S.filters;
+  const p = new URLSearchParams();
+  if (f.category !== "all") p.set("category", f.category);
+  if (f.minPrice > 0)       p.set("minPrice", f.minPrice);
+  if (f.maxPrice < 1100)    p.set("maxPrice", f.maxPrice);
+  if (f.minRating > 0)      p.set("minRating", f.minRating);
+  if (f.inStock)            p.set("inStock", "true");
+  p.set("sort", f.sort);
+  const d = await fetch("/api/products?" + p).then(r => r.json()).catch(() => ({products:[],total:0}));
+  S.products = d.products;
+  renderProducts(d.products);
+}
+
+function starsHtml(rating) {
+  const full = Math.floor(rating);
+  const half = rating % 1 >= 0.5 ? 1 : 0;
+  const empty = 5 - full - half;
+  return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(empty);
+}
+
+function renderProducts(list) {
+  const grid  = $("productGrid");
+  const empty = $("emptyState");
+  const count = $("productCount");
+  if (S.filters.search.trim()) {
+    const q = S.filters.search.toLowerCase();
+    list = list.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.tags.some(t => t.includes(q)));
+  }
+  if (!list.length) { grid.innerHTML = ""; empty.style.display = "block"; count.textContent = "0 products"; return; }
+  empty.style.display = "none";
+  count.textContent = `${list.length} product${list.length !== 1 ? "s" : ""}`;
+  grid.innerHTML = list.map((p, i) => {
+    const disc = p.originalPrice > p.price ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+    return `
+    <article class="pcard" data-id="${p.id}" style="animation-delay:${Math.min(i,20)*0.03}s">
+      <div class="pcard-img-wrap">
+        <img class="pcard-img" src="${p.image}" alt="${p.title}" loading="lazy"/>
+        ${disc ? `<span class="pcard-badge badge-sale">-${disc}%</span>` : ""}
+        ${!p.inStock ? `<span class="pcard-badge badge-oos">Out of stock</span>` : ""}
+        ${p.inStock ? `<button class="pcard-qa" data-id="${p.id}">+ Add to cart</button>` : ""}
+      </div>
+      <div class="pcard-body">
+        <p class="pcard-cat">${p.category}</p>
+        <h3 class="pcard-title">${p.title}</h3>
+        <div class="pcard-rating">
+          <span class="pcard-stars">${starsHtml(p.rating)}</span>
+          <span class="pcard-rev">${p.rating} (${p.reviews.toLocaleString()})</span>
+        </div>
+        <div class="pcard-price-row">
+          <span class="pcard-price">$${p.price.toFixed(2)}</span>
+          ${p.originalPrice > p.price ? `<span class="pcard-orig">$${p.originalPrice.toFixed(2)}</span>` : ""}
+          ${disc ? `<span class="pcard-save">-${disc}%</span>` : ""}
+        </div>
+        ${!p.inStock ? `<span class="pcard-oos">⚠ Out of stock</span>` : ""}
+      </div>
+    </article>`;
+  }).join("");
+
+  grid.querySelectorAll(".pcard-qa").forEach(b => {
+    b.addEventListener("click", e => {
+      e.stopPropagation();
+      addToCart(+b.dataset.id);
+      b.textContent = "✓ Added!";
+      b.style.background = "var(--green)";
+      setTimeout(() => { b.textContent = "+ Add to cart"; b.style.background = ""; }, 1200);
+    });
+  });
+
+  grid.querySelectorAll(".pcard").forEach(card => {
+    card.addEventListener("click", e => {
+      if (e.target.closest(".pcard-qa")) return;
+      openDetailPage(+card.dataset.id);
+    });
+  });
+}
