@@ -189,3 +189,97 @@ function renderProducts(list) {
     });
   });
 }
+
+async function openDetailPage(id) {
+  const res = await fetch(`/api/products/${id}`).then(r => r.json()).catch(() => null);
+  if (!res) return;
+  const { product: p, related } = res;
+  S.prevView = S.currentView || "shop";
+
+  const disc = p.originalPrice > p.price ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+  const specsHtml = p.specs
+    ? Object.entries(p.specs).map(([k,v]) => `<div class="spec-row"><span class="spec-key">${k}</span><span class="spec-val">${v}</span></div>`).join("")
+    : "";
+  const relatedHtml = related.length ? `
+    <div class="detail-related">
+      <h2 class="related-title">Related Products</h2>
+      <div class="related-grid">${related.map(r => {
+        const rd = r.originalPrice > r.price ? Math.round((1 - r.price/r.originalPrice)*100) : 0;
+        return `
+        <article class="pcard" data-id="${r.id}" style="cursor:pointer">
+          <div class="pcard-img-wrap">
+            <img class="pcard-img" src="${r.image}" alt="${r.title}" loading="lazy"/>
+            ${rd ? `<span class="pcard-badge badge-sale">-${rd}%</span>` : ""}
+          </div>
+          <div class="pcard-body">
+            <p class="pcard-cat">${r.category}</p>
+            <h3 class="pcard-title">${r.title}</h3>
+            <div class="pcard-price-row">
+              <span class="pcard-price">$${r.price.toFixed(2)}</span>
+              ${r.originalPrice > r.price ? `<span class="pcard-orig">$${r.originalPrice.toFixed(2)}</span>` : ""}
+            </div>
+          </div>
+        </article>`;
+      }).join("")}</div>
+    </div>` : "";
+
+  $("detailContainer").innerHTML = `
+    <button class="detail-back" id="detailBack">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Shop
+    </button>
+    <div class="detail-grid">
+      <div class="detail-img-wrap">
+        <img class="detail-img" src="${p.image}" alt="${p.title}"/>
+        ${disc ? `<div class="detail-badge">-${disc}% OFF</div>` : ""}
+      </div>
+      <div class="detail-info">
+        <p class="detail-cat">${p.category}</p>
+        <h1 class="detail-title">${p.title}</h1>
+        <div class="detail-rating">
+          <span class="detail-stars">${starsHtml(p.rating)}</span>
+          <span class="detail-rnum">${p.rating} · ${p.reviews.toLocaleString()} reviews</span>
+        </div>
+        <div class="detail-price-row">
+          <span class="detail-price">$${p.price.toFixed(2)}</span>
+          ${p.originalPrice > p.price ? `<span class="detail-orig">$${p.originalPrice.toFixed(2)}</span>` : ""}
+          ${disc ? `<span class="detail-save">Save ${disc}%</span>` : ""}
+        </div>
+        <p class="detail-desc">${p.description}</p>
+        <div class="detail-stock">
+          <span class="stock-dot ${p.inStock ? "" : "out"}"></span>
+          ${p.inStock ? "In Stock — Ready to ship" : "Out of Stock"}
+        </div>
+        <div class="detail-actions">
+          <button class="btn-add-cart" id="detailAddCart" ${!p.inStock ? "disabled" : ""} data-id="${p.id}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            ${p.inStock ? "Add to Cart" : "Out of Stock"}
+          </button>
+        </div>
+        ${specsHtml ? `<div class="detail-specs"><p class="detail-specs-title">Specifications</p>${specsHtml}</div>` : ""}
+      </div>
+    </div>
+    ${relatedHtml}`;
+
+  $("detailBack").addEventListener("click", () => switchView("shop"));
+  const addBtn = $("detailAddCart");
+  if (addBtn && p.inStock) {
+    addBtn.addEventListener("click", () => {
+      addToCart(p.id);
+      addBtn.textContent = "✓ Added to Cart!";
+      addBtn.style.background = "linear-gradient(135deg,var(--green),#00d980)";
+      setTimeout(() => {
+        addBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Add to Cart`;
+        addBtn.style.background = "";
+      }, 2000);
+    });
+  }
+
+  document.querySelectorAll(".related-grid .pcard").forEach(card => {
+    card.addEventListener("click", () => openDetailPage(+card.dataset.id));
+  });
+
+  switchView("detail");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
