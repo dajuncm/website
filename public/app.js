@@ -283,3 +283,56 @@ async function openDetailPage(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function switchView(v) {
+  S.currentView = v;
+  $("shopView").style.display   = v === "shop"   ? "" : "none";
+  $("detailView").style.display = v === "detail"  ? "" : "none";
+  $("aiView").style.display     = v === "ai"      ? "" : "none";
+  document.querySelectorAll(".nav-btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.view === v || (v === "detail" && b.dataset.view === "shop"));
+  });
+}
+
+function clearFilters() {
+  S.filters = { category:"all", minPrice:0, maxPrice:1100, minRating:0, inStock:false, sort:S.filters.sort, search:"" };
+  document.querySelectorAll(".cat-btn").forEach(b => b.classList.toggle("active", b.dataset.cat === "all"));
+  $("rangeMin").value = 0; $("rangeMax").value = 1100; initRangeSlider();
+  $("inStockOnly").checked = false;
+  document.querySelectorAll(".star-btn").forEach(b => b.classList.toggle("active", b.dataset.r === "0"));
+  $("shopSearch").value = "";
+  loadProducts();
+}
+
+function initRangeSlider() {
+  const mn = $("rangeMin"), mx = $("rangeMax"), fill = $("rangeFill");
+  function upd() {
+    const lo = +mn.value, hi = +mx.value;
+    fill.style.left  = (lo / 1100 * 100) + "%";
+    fill.style.width = ((hi - lo) / 1100 * 100) + "%";
+    $("priceMin").textContent = `$${lo}`;
+    $("priceMax").textContent = `$${hi}`;
+  }
+  mn.addEventListener("input", () => { if (+mn.value > +mx.value - 20) mn.value = +mx.value - 20; S.filters.minPrice = +mn.value; upd(); loadProducts(); });
+  mx.addEventListener("input", () => { if (+mx.value < +mn.value + 20) mx.value = +mn.value + 20; S.filters.maxPrice = +mx.value; upd(); loadProducts(); });
+  upd();
+}
+
+function addToCart(id) {
+  const p = S.products.find(x => x.id === id);
+  if (!p || !p.inStock) return;
+  const ex = S.cart.find(x => x.id === id);
+  if (ex) ex.qty++;
+  else S.cart.push({ id:p.id, title:p.title, price:p.price, image:p.image, category:p.category, qty:1 });
+  localStorage.setItem("nx_cart", JSON.stringify(S.cart));
+  renderCart();
+  openDrawer();
+}
+function removeFromCart(id) { S.cart = S.cart.filter(x => x.id !== id); localStorage.setItem("nx_cart", JSON.stringify(S.cart)); renderCart(); }
+function changeQty(id, d) {
+  const item = S.cart.find(x => x.id === id);
+  if (!item) return;
+  item.qty += d;
+  if (item.qty <= 0) S.cart = S.cart.filter(x => x.id !== id);
+  localStorage.setItem("nx_cart", JSON.stringify(S.cart));
+  renderCart();
+}
