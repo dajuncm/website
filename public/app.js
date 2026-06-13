@@ -336,3 +336,102 @@ function changeQty(id, d) {
   localStorage.setItem("nx_cart", JSON.stringify(S.cart));
   renderCart();
 }
+
+function renderCart() {
+  const total = S.cart.reduce((s,i) => s + i.qty, 0);
+  const badge = $("cartCount");
+  badge.textContent = total;
+  badge.classList.toggle("show", total > 0);
+  const body = $("cartItems");
+  body.querySelectorAll(".cart-item").forEach(e => e.remove());
+  if (!S.cart.length) {
+    $("cartEmpty").style.display = ""; $("cartFooter").style.display = "none"; return;
+  }
+  $("cartEmpty").style.display = "none"; $("cartFooter").style.display = "block";
+  S.cart.forEach(item => {
+    const d = el("div","cart-item");
+    d.innerHTML = `
+      <img class="ci-img" src="${item.image}" alt="${item.title}"/>
+      <div class="ci-info">
+        <p class="ci-name">${item.title}</p>
+        <p class="ci-cat">${item.category}</p>
+        <div class="ci-foot">
+          <div class="qty-ctrl">
+            <button class="qty-btn" data-id="${item.id}" data-d="-1">−</button>
+            <span class="qty-n">${item.qty}</span>
+            <button class="qty-btn" data-id="${item.id}" data-d="1">+</button>
+          </div>
+          <span class="ci-price">$${(item.price * item.qty).toFixed(2)}</span>
+          <button class="ci-remove" data-id="${item.id}">✕</button>
+        </div>
+      </div>`;
+    body.appendChild(d);
+  });
+  body.querySelectorAll(".qty-btn").forEach(b => b.addEventListener("click", () => changeQty(+b.dataset.id, +b.dataset.d)));
+  body.querySelectorAll(".ci-remove").forEach(b => b.addEventListener("click", () => removeFromCart(+b.dataset.id)));
+  const sub = S.cart.reduce((s,i) => s + i.price * i.qty, 0);
+  $("cartSubtotal").textContent = $("cartTotal").textContent = `$${sub.toFixed(2)}`;
+}
+
+function openDrawer()  { $("cartDrawer").classList.add("open"); $("cartOverlay").classList.add("open"); document.body.style.overflow = "hidden"; }
+function closeDrawer() { $("cartDrawer").classList.remove("open"); $("cartOverlay").classList.remove("open"); document.body.style.overflow = ""; }
+
+async function aiSearch(query) {
+  if (S.aiWorking) return;
+  S.aiWorking = true; $("aiSendBtn").disabled = true;
+  appendUserMsg(query);
+  const thinking = appendThinking();
+  try {
+    const r = await fetch("/api/search/ai", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({query}) });
+    const d = await r.json();
+    thinking.remove();
+    r.ok ? appendBotResults(d.intentSummary, d.results) : appendBotMsg("Sorry, something went wrong. Please try again.");
+  } catch { thinking.remove(); appendBotMsg("Network error. Please try again."); }
+  finally { S.aiWorking = false; $("aiSendBtn").disabled = false; }
+}
+
+function appendUserMsg(text) {
+  const d = el("div","msg user"); d.innerHTML = `<div class="user-bubble">${esc(text)}</div>`;
+  $("aiMessages").appendChild(d); scrollChat();
+}
+function appendBotMsg(text) {
+  const d = el("div","msg bot"); d.innerHTML = `<div class="bot-ava">✦</div><div class="bot-bubble"><p>${esc(text)}</p></div>`;
+  $("aiMessages").appendChild(d); scrollChat();
+}
+function appendThinking() {
+  const d = el("div","msg bot");
+  d.innerHTML = `<div class="bot-ava">✦</div><div class="bot-bubble" style="display:flex;gap:5px;align-items:center;padding:16px 18px"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+  $("aiMessages").appendChild(d); scrollChat(); return d;
+}
+function appendBotResults(summary, results) {
+  const d = el("div","msg bot");
+  if (!results?.length) {
+    d.innerHTML = `<div class="bot-ava">✦</div><div class="bot-bubble"><p>No products found. Try rephrasing — e.g. "wireless headphones for running" or "budget laptop for students".</p></div>`;
+  } else {
+    const cards = results.map(p => `
+      <div class="ai-card" data-id="${p.id}">
+        <img src="${p.image}" alt="${p.title}" loading="lazy"/>
+        <div class="ai-card-body">
+          <p class="ai-card-cat">${p.category}</p>
+          <p class="ai-card-name">${p.title}</p>
+          <p class="ai-card-price">$${p.price.toFixed(2)}</p>
+          ${p.inStock ? `<button class="ai-add-btn" data-id="${p.id}">+ Add to Cart</button>` : `<button class="ai-add-btn" disabled style="opacity:.35;cursor:not-allowed">Out of Stock</button>`}
+        </div>
+      </div>`).join("");
+    d.innerHTML = `<div class="bot-ava">✦</div><div class="bot-bubble"><div class="ai-intent-tag">✦ ${esc(summary)}</div><div class="ai-result-grid">${cards}</div></div>`;
+  }
+  $("aiMessages").appendChild(d);
+  d.querySelectorAll(".ai-card[data-id]").forEach(card => card.addEventListener("click", e => {
+    if (e.target.closest(".ai-add-btn")) return;
+    openDetailPage(+card.dataset.id);
+  }));
+  d.querySelectorAll(".ai-add-btn[data-id]").forEach(b => {
+    b.addEventListener("click", () => {
+      addToCart(+b.dataset.id);
+      b.textContent = "✓ Added!"; b.style.background = "var(--green)";
+      setTimeout(() => { b.textContent = "✓ In Cart"; b.style.background = ""; }, 1500);
+    });
+  });
+  scrollChat();
+}
+function scrollChat() { requestAnimationFrame(() => { $("aiMessages").scrollTop = 9999; }); }
