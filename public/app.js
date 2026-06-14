@@ -435,3 +435,89 @@ function appendBotResults(summary, results) {
   scrollChat();
 }
 function scrollChat() { requestAnimationFrame(() => { $("aiMessages").scrollTop = 9999; }); }
+
+function toast(msg, dur=3000) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), dur);
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function bindEvents() {
+  $("themeToggle").addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    localStorage.setItem("nx_theme", next);
+  });
+
+  document.querySelectorAll(".nav-btn").forEach(b =>
+    b.addEventListener("click", () => switchView(b.dataset.view)));
+  $("logoLink").addEventListener("click", e => { e.preventDefault(); switchView("shop"); });
+  $("tryAiBtn").addEventListener("click", () => switchView("ai"));
+
+  $("openLogin").addEventListener("click",    () => { clearErr("loginErr");   openModal("loginModal"); });
+  $("openRegister").addEventListener("click", () => { clearErr("regErr");     openModal("registerModal"); });
+  $("logoutBtn").addEventListener("click", logout);
+
+  document.querySelectorAll("[data-close]").forEach(b =>
+    b.addEventListener("click", () => closeModal(b.dataset.close)));
+  ["loginModal","registerModal"].forEach(id =>
+    $(id).addEventListener("click", e => { if (e.target === $(id)) closeModal(id); }));
+
+  $("switchToRegister").addEventListener("click", () => { closeModal("loginModal");    clearErr("regErr");   openModal("registerModal"); });
+  $("switchToLogin").addEventListener("click",    () => { closeModal("registerModal"); clearErr("loginErr"); openModal("loginModal"); });
+
+  $("loginBtn").addEventListener("click", doLogin);
+  $("registerBtn").addEventListener("click", doRegister);
+  ["loginEmail","loginPass"].forEach(id => $(id).addEventListener("keydown", e => { if (e.key==="Enter") doLogin(); }));
+  ["regName","regEmail","regPass"].forEach(id => $(id).addEventListener("keydown", e => { if (e.key==="Enter") doRegister(); }));
+
+  $("cartBtn").addEventListener("click",   openDrawer);
+  $("cartClose").addEventListener("click", closeDrawer);
+  $("cartOverlay").addEventListener("click", closeDrawer);
+  $("checkoutBtn").addEventListener("click", () => { closeDrawer(); openModal("checkoutModal"); });
+  $("modalCloseBtn").addEventListener("click", () => {
+    closeModal("checkoutModal");
+    S.cart = []; localStorage.setItem("nx_cart", JSON.stringify(S.cart)); renderCart();
+  });
+
+  $("sortSelect").addEventListener("change", e => { S.filters.sort = e.target.value; loadProducts(); });
+  $("inStockOnly").addEventListener("change", e => { S.filters.inStock = e.target.checked; loadProducts(); });
+
+  document.querySelectorAll(".star-btn").forEach(b =>
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".star-btn").forEach(x => x.classList.remove("active"));
+      b.classList.add("active"); S.filters.minRating = +b.dataset.r; loadProducts();
+    }));
+
+  let st;
+  $("shopSearch").addEventListener("input", e => {
+    clearTimeout(st); S.filters.search = e.target.value;
+    st = setTimeout(() => renderProducts(S.products), 250);
+  });
+
+  $("clearFilters").addEventListener("click", clearFilters);
+
+  $("aiSendBtn").addEventListener("click", sendAI);
+  $("aiInput").addEventListener("keydown", e => { if (e.key==="Enter" && !e.shiftKey) { e.preventDefault(); sendAI(); } });
+  $("aiInput").addEventListener("input", () => {
+    $("aiInput").style.height = "auto";
+    $("aiInput").style.height = Math.min($("aiInput").scrollHeight, 110) + "px";
+  });
+
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".chip[data-q]"); if (!c) return;
+    $("aiInput").value = c.dataset.q; sendAI();
+  });
+}
+
+function sendAI() {
+  const txt = $("aiInput").value.trim();
+  if (!txt || S.aiWorking) return;
+  $("aiInput").value = ""; $("aiInput").style.height = "auto";
+  aiSearch(txt);
+}
+
+init();
