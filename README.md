@@ -26,14 +26,20 @@ Welcome to the **AI-Powered Online Shopping Platform**! This is a modern e-comme
 
 ## 📥 Setup
 ```bash
+
+
+
 git clone https://github.com/dajuncm/website.git
 cd website
 
+```
 
 ## 📦 Install
 
 ```bash
 npm install
+
+```
 
 ## ▶️ Start
 ```bash
