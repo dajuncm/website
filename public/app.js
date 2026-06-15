@@ -76,7 +76,7 @@ async function doRegister() {
     saveSession(d.token, d.user);
     closeModal("registerModal");
     $("regName").value = $("regEmail").value = $("regPass").value = "";
-    toast(`Welcome to NEXUS, ${d.user.name}! 🎉`);
+    toast(`Welcome to MaNar, ${d.user.name}! 🎉`);
   } catch { showErr("regErr", "Network error"); }
   finally { btn.disabled = false; btn.textContent = "Create Account"; }
 }
