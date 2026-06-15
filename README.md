@@ -20,3 +20,23 @@ Welcome to the **AI-Powered Online Shopping Platform**! This is a modern e-comme
 * **Backend:** Node.js, Express.js
 * **AI Integration:** OpenAI API
 * **Database:** users.db
+
+
+# 🚀 How to Run This Project
+
+## 📥 Setup
+```bash
+git clone https://github.com/dajuncm/website.git
+cd website
+
+
+## 📦 Install
+
+```bash
+npm install
+
+## ▶️ Start
+```bash
+npm run dev
+or
+npm start
