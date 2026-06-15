@@ -3,6 +3,8 @@ const path    = require("path");
 const bcrypt  = require("bcryptjs");
 const jwt     = require("jsonwebtoken");
 const fs      = require("fs");
+const path = require('path');
+
 
 const app        = express();
 const JWT_SECRET = "manar_secret_key_2024";
@@ -18,7 +20,7 @@ function writeDB(data) {
 }
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 
 function authMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
