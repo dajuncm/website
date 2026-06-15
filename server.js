@@ -18,7 +18,7 @@ function writeDB(data) {
 }
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname)));
 
 function authMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
@@ -237,5 +237,5 @@ app.post("/api/search/ai", (req, res) => {
   res.json({ results, intentSummary: `Found ${results.length} product${results.length!==1?"s":""} for ${intent}`, query });
 });
 
-app.get("*", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.listen(PORT, () => console.log(`🛒 MaNar Store → http://localhost:${PORT}`));
