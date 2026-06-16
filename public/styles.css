@@ -13,7 +13,7 @@ html {
 :root {
     --bg: #050505;
     --bg2: rgba(255, 255, 255, .03);
-    --bg3: rgba(255, 255, 255, .04);
+    --bg3: rgba(255, 255, 255, .08);
     --bg4: rgba(255, 255, 255, .06);
     --bg5: rgba(255, 255, 255, .08);
 
@@ -22,12 +22,13 @@ html {
     --border: rgba(255, 255, 255, .08);
     --border2: rgba(255, 255, 255, .14);
 
-    --text: #ffffff;
-    --text2: rgba(255, 255, 255, .65);
-    --text3: rgba(255, 255, 255, .4);
+    --text: #f2f2f2;
+    --text2: #d0d0d0;
+    --text3: #9a9a9a;
 
     --accent: #ffffff;
     --accent2: #d9d9d9;
+    --onAccent: #050505;
 
     --accentRgb: 255, 255, 255;
     --accentGlow: rgba(255, 255, 255, .08);
@@ -62,6 +63,7 @@ html {
 
     --accent: #5b48f0;
     --accent2: #7b6aff;
+    --onAccent: #ffffff;
 
     --accentRgb: 91, 72, 240;
     --accentGlow: rgba(91, 72, 240, .15);
@@ -85,10 +87,14 @@ body {
     transition: background var(--ease), color var(--ease)
 }
 
-.header{
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(30px);
-  border-bottom:1px solid rgba(255,255,255,.06);
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    height: var(--header-h);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px)
 }
 
 .header-inner {
@@ -114,7 +120,7 @@ body {
     width: 34px;
     height: 34px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff;
+    color: var(--onAccent);
     font-family: var(--ff-d);
     font-weight: 800;
     font-size: 18px;
@@ -148,20 +154,25 @@ body {
     font-family: var(--ff-b);
     font-size: 14px;
     font-weight: 500;
-    color: var(--text2);
+    color: var(--text);
     cursor: pointer;
-    transition: all var(--ease)
+    transition: all var(--ease);
+     opacity: .75;
+}
+button {
+    color: inherit;
 }
 
 .nav-btn.active {
     background: var(--accent);
-    color: #fff
+    color: var(--onAccent)
 }
 
 .nav-btn:not(.active):hover {
     background: var(--bg4);
     color: var(--text)
 }
+
 
 .header-actions {
     margin-left: auto;
@@ -202,7 +213,7 @@ body {
     font-family: var(--ff-b);
     font-size: 13.5px;
     font-weight: 500;
-    color: var(--text2);
+    color: var(--text);
     cursor: pointer;
     transition: all var(--ease)
 }
@@ -220,7 +231,7 @@ body {
     font-family: var(--ff-b);
     font-size: 13.5px;
     font-weight: 600;
-    color: #fff;
+    color: var(--onAccent);
     cursor: pointer;
     box-shadow: 0 4px 16px var(--accentGlow);
     transition: opacity var(--ease), transform var(--ease);
@@ -247,7 +258,7 @@ body {
     height: 28px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff;
+    color: var(--onAccent);
     font-size: 13px;
     font-weight: 700;
     display: grid;
@@ -304,7 +315,7 @@ body {
     top: -6px;
     right: -6px;
     background: var(--accent);
-    color: #fff;
+    color: var(--onAccent);
     font-size: 10px;
     font-weight: 700;
     min-width: 19px;
@@ -633,23 +644,22 @@ body {
     border-color: var(--accent)
 }
 
-.product-grid{
-  display:grid;
-  grid-template-columns:
-  repeat(auto-fill,minmax(280px,1fr));
-  gap:24px;
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px
 }
 
-.pcard{
-  background:rgba(255,255,255,.03);
-  backdrop-filter:blur(30px);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:26px;
-  overflow:hidden;
-  transition:.35s;
+.pcard {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    animation: cardIn .4s ease both;
+    position: relative
 }
-
-
 
 @keyframes cardIn {
     from {
@@ -663,21 +673,24 @@ body {
     }
 }
 
-.pcard:hover{
-  transform:translateY(-8px);
-  border-color:rgba(255,255,255,.18);
-  box-shadow:0 20px 50px rgba(0,0,0,.45);
+.pcard:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadowCard), 0 0 24px var(--accentGlow);
+    border-color: var(--border2)
 }
 
-.pcard-img-wrap{
-  aspect-ratio:1;
-  background:#0a0a0a;
+.pcard-img-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--bg3)
 }
 
-.pcard-img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+.pcard-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .4s ease
 }
 
 .pcard:hover .pcard-img {
@@ -698,7 +711,7 @@ body {
 
 .badge-sale {
     background: var(--accent);
-    color: #fff
+    color: var(--onAccent)
 }
 
 .badge-oos {
@@ -712,7 +725,7 @@ body {
     left: 50%;
     transform: translateX(-50%) translateY(10px);
     background: var(--accent);
-    color: #fff;
+    color: var(--onAccent);
     border: none;
     border-radius: 50px;
     padding: 8px 18px;
@@ -884,7 +897,7 @@ body {
     top: 16px;
     left: 16px;
     background: var(--accent);
-    color: #fff;
+    color: var(--onAccent);
     padding: 6px 14px;
     border-radius: 50px;
     font-size: 12px;
@@ -998,7 +1011,7 @@ body {
     border: none;
     border-radius: 12px;
     padding: 14px;
-    color: #fff;
+    color: var(--onAccent);
     font-family: var(--ff-d);
     font-size: 15px;
     font-weight: 700;
@@ -1172,7 +1185,7 @@ body {
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     display: grid;
     place-items: center;
-    color: #fff;
+    color: var(--onAccent);
     font-size: 13px
 }
 
@@ -1194,7 +1207,7 @@ body {
     max-width: 72%;
     font-size: 14px;
     line-height: 1.65;
-    color: #fff
+    color: var(--onAccent)
 }
 
 .chips {
@@ -1289,7 +1302,7 @@ body {
     padding: 6px;
     font-size: 11.5px;
     font-weight: 600;
-    color: #fff;
+    color: var(--onAccent);
     cursor: pointer;
     font-family: var(--ff-b);
     transition: opacity var(--ease)
@@ -1388,7 +1401,7 @@ body {
     display: grid;
     place-items: center;
     cursor: pointer;
-    color: #fff;
+    color: var(--onAccent);
     flex-shrink: 0;
     transition: opacity var(--ease), transform var(--ease)
 }
@@ -1573,7 +1586,7 @@ body {
 
 .qty-btn:hover {
     background: var(--accent);
-    color: #fff
+    color: var(--onAccent)
 }
 
 .qty-n {
@@ -1640,7 +1653,7 @@ body {
     border: none;
     border-radius: 12px;
     padding: 13px;
-    color: #fff;
+    color: var(--onAccent);
     font-family: var(--ff-d);
     font-size: 15px;
     font-weight: 700;
@@ -1813,7 +1826,7 @@ body {
     border: none;
     border-radius: 11px;
     padding: 13px;
-    color: #fff;
+    color: var(--onAccent);
     font-family: var(--ff-d);
     font-size: 15px;
     font-weight: 700;
