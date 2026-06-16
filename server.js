@@ -1,78 +1,14 @@
+
 const express = require("express");
-const bcrypt  = require("bcryptjs");
-const jwt     = require("jsonwebtoken");
-const fs      = require("fs");
-const path = require('path');
+const path    = require("path");
 
-
-const app        = express();
-const JWT_SECRET = "manar_secret_key_2024";
-const PORT = process.env.PORT || 5000;
-
-const DB_FILE    = path.join(__dirname, "users.json");
-
-function readDB() {
-  if (!fs.existsSync(DB_FILE)) fs.writeFileSync(DB_FILE, JSON.stringify({ users: [] }));
-  return JSON.parse(fs.readFileSync(DB_FILE, "utf8"));
-}
-function writeDB(data) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
-}
+const app  = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
-function authMiddleware(req, res, next) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
-  try { req.user = jwt.verify(token, JWT_SECRET); next(); }
-  catch { res.status(401).json({ error: "Invalid token" }); }
-}
-
-app.post("/api/auth/register", (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name?.trim() || !email?.trim() || !password)
-    return res.status(400).json({ error: "All fields are required" });
-  if (password.length < 6)
-    return res.status(400).json({ error: "Password must be at least 6 characters" });
-  const db = readDB();
-  const emailLC = email.toLowerCase().trim();
-  if (db.users.find(u => u.email === emailLC))
-    return res.status(400).json({ error: "An account with this email already exists" });
-  const newUser = {
-    id: db.users.length + 1,
-    name: name.trim(),
-    email: emailLC,
-    password: bcrypt.hashSync(password, 10),
-    created_at: new Date().toISOString()
-  };
-  db.users.push(newUser);
-  writeDB(db);
-  const user  = { id: newUser.id, name: newUser.name, email: newUser.email };
-  const token = jwt.sign(user, JWT_SECRET, { expiresIn: "7d" });
-  res.json({ token, user });
-});
-
-app.post("/api/auth/login", (req, res) => {
-  const { email, password } = req.body;
-  if (!email?.trim() || !password)
-    return res.status(400).json({ error: "Email and password are required" });
-  const db  = readDB();
-  const row = db.users.find(u => u.email === email.toLowerCase().trim());
-  if (!row || !bcrypt.compareSync(password, row.password))
-    return res.status(400).json({ error: "Invalid email or password" });
-  const user  = { id: row.id, name: row.name, email: row.email };
-  const token = jwt.sign(user, JWT_SECRET, { expiresIn: "7d" });
-  res.json({ token, user });
-});
-
-app.get("/api/auth/me", authMiddleware, (req, res) => {
-  const db  = readDB();
-  const row = db.users.find(u => u.id === req.user.id);
-  if (!row) return res.status(404).json({ error: "User not found" });
-  res.json({ user: { id: row.id, name: row.name, email: row.email, created_at: row.created_at } });
-});
-
+ 
 const products = [
   { id:1,  title:"AirWave Pro Wireless Headphones",    category:"Audio",           price:89.99,  originalPrice:129.99, rating:4.8, reviews:2341, inStock:true,  popularity:98, image:"https://us.langsdom.com/cdn/shop/files/BE19_5e5eb36e-90cd-4828-9c08-7c1dcb481681.png?v=1761292716&width=1200", description:"Premium over-ear wireless headphones with active noise cancellation, 30-hour battery life, and IPX5 sweat resistance. Features Hi-Res audio, foldable design, and multipoint Bluetooth 5.2 connection. Perfect for workouts, commutes, and studio sessions.", tags:["wireless","headphones","bluetooth","music","running","sport","sweat-resistant","workout","gym","noise-cancelling","over-ear"], personas:["athlete","runner","music-lover","commuter"], specs:{ "Driver":"40mm dynamic","Frequency":"20Hz-20kHz","Battery":"30 hours","Bluetooth":"5.2","Weight":"250g","Warranty":"2 years" } },
   { id:2,  title:'SwiftBook Air 14" Laptop',           category:"Computers",       price:649.00, originalPrice:799.00, rating:4.7, reviews:1892, inStock:true,  popularity:95, image:"https://fullhouse.co.za/cdn/shop/files/22207_pims_2048x.jpg?v=1779412290", description:"Thin and light 14-inch laptop powered by a 12-core processor with 16GB RAM and a 512GB NVMe SSD. Offers a stunning 2K IPS display, 12-hour battery life, and weighs just 1.3kg. Ideal for students, professionals, and anyone on the go.", tags:["laptop","computer","student","university","study","portable","lightweight","affordable","budget","productivity","work"], personas:["student","professional","budget-conscious"], specs:{ "CPU":"12-core processor","RAM":"16GB LPDDR5","Storage":"512GB NVMe SSD","Display":"14\" 2K IPS","Battery":"12 hours","Weight":"1.3kg" } },
@@ -167,6 +103,9 @@ const semanticMap = {
   "gift":           ["popular","highly rated","wireless","premium"],
 };
 
+
+
+
 function semanticSearch(query) {
   const q     = query.toLowerCase();
   const words = q.split(/\s+/);
@@ -212,10 +151,7 @@ app.get("/api/products", (req, res) => {
 app.get("/api/products/:id", (req, res) => {
   const product = products.find(p => p.id === +req.params.id);
   if (!product) return res.status(404).json({ error: "Product not found" });
-  const related = products
-    .filter(p => p.id !== product.id && p.category === product.category)
-    .sort((a,b) => b.popularity - a.popularity)
-    .slice(0, 4);
+  const related = products.filter(p => p.id !== product.id && p.category === product.category).sort((a,b) => b.popularity - a.popularity).slice(0, 4);
   res.json({ product, related });
 });
 
@@ -239,7 +175,8 @@ app.post("/api/search/ai", (req, res) => {
   res.json({ results, intentSummary: `Found ${results.length} product${results.length!==1?"s":""} for ${intent}`, query });
 });
 
-app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+app.get("*", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.listen(PORT, () => console.log(`🛒 MaNar Store → http://localhost:${PORT}`));
+     
+
+    
